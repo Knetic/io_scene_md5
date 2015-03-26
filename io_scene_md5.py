@@ -31,7 +31,7 @@ md5Layer = IntProperty(
         name="Bone Layer",
         description="Bone layer reserved for MD5 export",
         min=1, max=20,
-        default=5)
+        default=1)
 bpy.types.Scene.md5_bone_layer = md5Layer
 
 ###
@@ -656,6 +656,21 @@ class ExportMD5Mesh(bpy.types.Operator, ExportHelper):
     path_mode = path_reference_mode
     check_extension = True
     def execute(self, context):
+
+        global prerequisites
+
+        if(prerequisites == None):
+            selection = context.selected_objects
+            checkResult = is_export_go('batch', selection)
+
+            if checkResult[0] != 'ok':
+                msgLines = message(checkResult[0], checkResult[1])
+                print(msgLines)
+                self.report({'ERROR'}, msgLines)
+                return {'CANCELLED'}
+
+            prerequisites = checkResult[-1]
+
         orientationTweak = mathutils.Matrix.Rotation(math.radians(
             -90 * float(self.reorient)),4,'Z')
         scaleTweak = mathutils.Matrix.Scale(self.scaleFactor, 4)
@@ -692,6 +707,21 @@ class ExportMD5Anim(bpy.types.Operator, ExportHelper):
     path_mode = path_reference_mode
     check_extension = True
     def execute(self, context):
+
+        global prerequisites
+
+        if(prerequisites == None):
+            selection = context.selected_objects
+            checkResult = is_export_go('batch', selection)
+
+            if checkResult[0] != 'ok':
+                msgLines = message(checkResult[0], checkResult[1])
+                print(msgLines)
+                self.report({'ERROR'}, msgLines)
+                return {'CANCELLED'}
+
+            prerequisites = checkResult[-1]
+
         orientationTweak = mathutils.Matrix.Rotation(math.radians(
             -90 * float(self.reorient)),4,'Z')
         scaleTweak = mathutils.Matrix.Scale(self.scaleFactor, 4)
@@ -734,6 +764,21 @@ class ExportMD5Batch(bpy.types.Operator, ExportHelper):
     path_mode = path_reference_mode
     check_extension = True
     def execute(self, context):
+
+        global prerequisites
+
+        if(prerequisites == None):
+            selection = context.selected_objects
+            checkResult = is_export_go('batch', selection)
+
+            if checkResult[0] != 'ok':
+                msgLines = message(checkResult[0], checkResult[1])
+                print(msgLines)
+                self.report({'ERROR'}, msgLines)
+                return {'CANCELLED'}
+
+            prerequisites = checkResult[-1]
+
         orientationTweak = mathutils.Matrix.Rotation(math.radians(
             -90 * float(self.reorient)),4,'Z')
         scaleTweak = mathutils.Matrix.Scale(self.scaleFactor, 4)
