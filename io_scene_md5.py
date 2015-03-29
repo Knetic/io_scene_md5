@@ -341,13 +341,23 @@ def write_md5anim(filePath, prerequisites, correctionMatrix, frameRange):
 
 def write_batch(filePath, prerequisites, correctionMatrix, markerFilter):
     write_md5mesh(filePath, prerequisites, correctionMatrix)
-    ranges = get_ranges(markerFilter)
-    if ranges:
-        for r in ranges.keys():
-            folder = os.path.dirname(filePath)
-            animFile = os.path.join(folder, r + ".md5anim")
-            write_md5anim(
-                animFile, prerequisites, correctionMatrix, ranges[r])
+
+    animationData = bpy.context.active_object.parent.animation_data
+    folderName = os.path.dirname(filePath)
+
+    if(animationData.nla_tracks):
+        for track in animationData.nla_tracks:
+            for strip in track.strips:
+
+                animationData.action = strip.action
+                animFile = os.path.join(folderName, track.name + ".md5anim")
+
+                range_start, range_end = strip.action.frame_range
+                range_start = int(range_start)
+                range_end = int(range_end)
+
+                write_md5anim(
+                    animFile, prerequisites, correctionMatrix, [range_start, range_end])
         return {'FINISHED'}
     else:
         baseFilePathEnd = filePath.rfind(".md5mesh")
