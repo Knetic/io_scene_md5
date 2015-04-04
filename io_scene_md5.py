@@ -346,13 +346,15 @@ def write_batch(filePath, prerequisites, correctionMatrix, markerFilter):
 
     animationData = meshObjects[0].parent.animation_data
     folderName = os.path.dirname(filePath)
+    modelName = os.path.basename(filePath)
+    modelName = os.path.splitext(modelName)[0]
 
     if(animationData.nla_tracks):
         for track in animationData.nla_tracks:
             for strip in track.strips:
 
                 animationData.action = strip.action
-                animFile = os.path.join(folderName, track.name + ".md5anim")
+                animFile = os.path.join(folderName, modelName + "_" + track.name + ".md5anim")
 
                 range_start, range_end = strip.action.frame_range
                 range_start = int(range_start)
@@ -364,7 +366,7 @@ def write_batch(filePath, prerequisites, correctionMatrix, markerFilter):
     else:
         baseFilePathEnd = filePath.rfind(".md5mesh")
         if baseFilePathEnd == -1:
-            animFilePath = filePath + ".md5anim"
+            animFilePath = modelName + "_" + filePath + ".md5anim"
         else:
             animFilePath = filePath[:baseFilePathEnd] + ".md5anim"
         write_md5anim(animFilePath, prerequisites, correctionMatrix, None)
