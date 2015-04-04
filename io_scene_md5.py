@@ -342,7 +342,9 @@ def write_md5anim(filePath, prerequisites, correctionMatrix, frameRange):
 def write_batch(filePath, prerequisites, correctionMatrix, markerFilter):
     write_md5mesh(filePath, prerequisites, correctionMatrix)
 
-    animationData = bpy.context.active_object.parent.animation_data
+    _, meshObjects = prerequisites
+
+    animationData = meshObjects[0].parent.animation_data
     folderName = os.path.dirname(filePath)
 
     if(animationData.nla_tracks):
@@ -626,7 +628,8 @@ class MaybeMD5Batch(bpy.types.Operator):
     bl_label = 'Export MD5 Files'
     def invoke(self, context, event):
         global msgLines, prerequisites
-        selection = context.selected_objects
+        selection = get_selected_mesh(context)
+        
         checkResult = is_export_go('batch', selection)
         if checkResult[0] == 'ok':
             prerequisites = checkResult[-1]
@@ -778,7 +781,7 @@ class ExportMD5Batch(bpy.types.Operator, ExportHelper):
         global prerequisites
 
         if(prerequisites == None):
-            selection = context.selected_objects
+            selection = get_selected_mesh(context)
             checkResult = is_export_go('batch', selection)
 
             if checkResult[0] != 'ok':
@@ -799,6 +802,14 @@ class ExportMD5Batch(bpy.types.Operator, ExportHelper):
                 correctionMatrix,
                 self.markerFilter)
         return {'FINISHED'}
+
+def get_selected_mesh(context):
+
+        for obj in context.scene.objects:
+                for child in obj.children:
+                        if(child.type == 'MESH'):
+                                return [child]
+        return []	
 
 def menu_func_export_mesh(self, context):
     self.layout.operator(
