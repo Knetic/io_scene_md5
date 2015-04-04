@@ -658,7 +658,7 @@ class ExportMD5Mesh(bpy.types.Operator, ExportHelper):
 	reorient = BoolProperty(
 			name="Reorient",
 			description="Treat +X as the forward direction",
-			default=True,
+			default=False,
 			)
 	scaleFactor = FloatProperty(
 			name="Scale",
@@ -709,7 +709,7 @@ class ExportMD5Anim(bpy.types.Operator, ExportHelper):
 	reorient = BoolProperty(
 			name="Reorient",
 			description="Treat +X as the forward direction",
-			default=True,
+			default=False,
 			)
 	scaleFactor = FloatProperty(
 			name="Scale",
@@ -747,6 +747,7 @@ class ExportMD5Anim(bpy.types.Operator, ExportHelper):
 class ExportMD5Batch(bpy.types.Operator, ExportHelper):
 	'''Save MD5 Files'''
 	global prerequisites
+
 	bl_idname = "export_scene.md5batch"
 	bl_label = 'Export MD5 Files'
 	bl_options = {'PRESET'}
@@ -766,7 +767,7 @@ class ExportMD5Batch(bpy.types.Operator, ExportHelper):
 	reorient = BoolProperty(
 			name="Reorient",
 			description="Treat +X as the forward direction",
-			default=True,
+			default=False,
 			)
 	scaleFactor = FloatProperty(
 			name="Scale",
