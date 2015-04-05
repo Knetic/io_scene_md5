@@ -265,11 +265,11 @@ def write_md5mesh(filePath, prerequisites, correctionMatrix):
 	f.close()
 	return
 
-def write_md5anim(filePath, prerequisites, correctionMatrix, frameRange):
-	goBack = bpy.context.scene.frame_current
+def write_md5anim(filePath, prerequisites, correctionMatrix, frameRange, context):
+	goBack = context.scene.frame_current
 	if frameRange == None:
-		startFrame = bpy.context.scene.frame_start
-		endFrame = bpy.context.scene.frame_end
+		startFrame = context.scene.frame_start
+		endFrame = context.scene.frame_end
 	else:
 		startFrame, endFrame = frameRange
 	bones, meshObjects = prerequisites
@@ -283,11 +283,13 @@ def write_md5anim(filePath, prerequisites, correctionMatrix, frameRange):
 	bounds = []
 	frames = []
 	for frame in range(startFrame, endFrame + 1):
-		bpy.context.scene.frame_set(frame)
+		context.scene.frame_set(frame)
 		verts = []
 		for mo in meshObjects:
+
 			bm = bmesh.new()
-			bm.from_object(mo, bpy.context.scene)
+			bm.from_object(mo, context.scene)
+
 			verts.extend([correctionMatrix * mo.matrix_world * v.co.to_4d()
 				for v in bm.verts])
 			bm.free()
@@ -339,7 +341,7 @@ def write_md5anim(filePath, prerequisites, correctionMatrix, frameRange):
 	bpy.context.scene.frame_set(goBack)
 	return
 
-def write_batch(filePath, prerequisites, correctionMatrix, markerFilter):
+def write_batch(filePath, prerequisites, correctionMatrix, context):
 	write_md5mesh(filePath, prerequisites, correctionMatrix)
 
 	_, meshObjects = prerequisites
@@ -361,7 +363,7 @@ def write_batch(filePath, prerequisites, correctionMatrix, markerFilter):
 				range_end = int(range_end)
 
 				write_md5anim(
-					animFile, prerequisites, correctionMatrix, [range_start, range_end])
+					animFile, prerequisites, correctionMatrix, [range_start, range_end], context)
 		return {'FINISHED'}
 	else:
 		baseFilePathEnd = filePath.rfind(".md5mesh")
@@ -369,7 +371,7 @@ def write_batch(filePath, prerequisites, correctionMatrix, markerFilter):
 			animFilePath = modelName + "_" + filePath + ".md5anim"
 		else:
 			animFilePath = filePath[:baseFilePathEnd] + ".md5anim"
-		write_md5anim(animFilePath, prerequisites, correctionMatrix, None)
+		write_md5anim(animFilePath, prerequisites, correctionMatrix, None, context)
 		return {'FINISHED'}
 
 ###
@@ -741,7 +743,7 @@ class ExportMD5Anim(bpy.types.Operator, ExportHelper):
 			-90 * float(self.reorient)),4,'Z')
 		scaleTweak = mathutils.Matrix.Scale(self.scaleFactor, 4)
 		correctionMatrix = orientationTweak * scaleTweak
-		write_md5anim(self.filepath, prerequisites, correctionMatrix, None)
+		write_md5anim(self.filepath, prerequisites, correctionMatrix, None, context)
 		return {'FINISHED'}
 
 class ExportMD5Batch(bpy.types.Operator, ExportHelper):
@@ -803,7 +805,7 @@ class ExportMD5Batch(bpy.types.Operator, ExportHelper):
 				self.filepath,
 				prerequisites,
 				correctionMatrix,
-				self.markerFilter)
+				context)
 		return {'FINISHED'}
 
 def get_selected_mesh(context):
