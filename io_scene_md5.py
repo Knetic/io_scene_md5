@@ -301,7 +301,7 @@ def write_md5anim(filePath, prerequisites, correctionMatrix, frameRange, context
 		maxZ = max([co[2] for co in verts])
 		bounds.append(\
 		"  ( {:.10f} {:.10f} {:.10f} ) ( {:.10f} {:.10f} {:.10f} )\n".\
-		format(minX, minY, minZ, maxX, maxY, maxZ))
+		format(minY, minX, minZ, maxZ, maxY, maxX))
 		frameBlock = ["frame {} {{\n".format(frame - startFrame)]
 		scaleFactor = correctionMatrix.to_scale()[0]
 		for b in bones:
